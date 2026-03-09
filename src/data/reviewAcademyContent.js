@@ -214,4 +214,41 @@ export function doThing2(a, b) {
       },
     ],
   },
+
+  // Intro page: one meme + one video
+  introFunContent: {
+    meme: {
+      src: "/memes/review1.jpg",
+      alt: "Code review meme",
+      caption: "Sound familiar? You're about to be on the other side of this.",
+    },
+    video: {
+      youtubeId: "Y9sp8gONv9M",
+      title: "How to Do Code Reviews Like a Human",
+      description: "Before diving in — watch this. It sets the tone for everything you'll learn here.",
+    },
+  },
+
+  // Categories page: a couple of memes + a video to keep energy up
+  categoriesFunContent: {
+    memes: [
+      {
+        id: "m1",
+        src: "/memes/review2.png",
+        alt: "Code review meme 2",
+        caption: "Structured categories save everyone from this fate.",
+      },
+      {
+        id: "m2",
+        src: "/memes/review3.jpg",
+        alt: "Code review meme 3",
+        caption: "Each category below = one less surprise in your review.",
+      },
+    ],
+    video: {
+      youtubeId: "Y9sp8gONv9M",
+      title: "Revisit: Code Review Done Right",
+      description: "Keep this in mind as you explore the categories below.",
+    },
+  },
 };
