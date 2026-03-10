@@ -6,15 +6,16 @@ import { reviewAcademyContent } from "../data/reviewAcademyContent";
 
 function MemeCard({ meme }) {
   return (
-    <div className="border border-gray-800 rounded-xl p-6 flex flex-col gap-3">
-      <div className="w-full h-[480px] rounded-lg overflow-hidden bg-[#0f1720] flex items-center justify-center">
-        <img
-          src={meme.src}
-          alt={meme.alt}
-          className="w-full h-full object-cover"
-        />
-      </div>
-      <p className="text-gray-400 text-sm italic text-center">{meme.caption}</p>
+    <div className="border border-gray-800 rounded-xl p-6 flex flex-col items-center gap-3">
+      <img
+        src={meme.src}
+        alt={meme.alt}
+        className="max-w-sm w-full rounded-lg"
+      />
+
+      <p className="text-gray-400 text-sm italic text-center">
+        {meme.caption}
+      </p>
     </div>
   );
 }

@@ -6,28 +6,41 @@ import { reviewAcademyContent } from "../data/reviewAcademyContent";
 
 function MemeCard({ meme }) {
   return (
-    <div className="border border-gray-800 rounded-xl p-6 flex flex-col gap-3">
-      <div className="w-full h-[480px] rounded-lg overflow-hidden bg-[#0f1720] flex items-center justify-center">
+    <div className="border border-gray-800 rounded-xl p-6 flex flex-col items-center gap-3">
+      
+      <div className="w-full max-w-sm rounded-lg overflow-hidden bg-[#0f1720] flex items-center justify-center">
         <img
           src={meme.src}
           alt={meme.alt}
-          className="w-full h-full object-cover"
+          className="w-full h-auto object-contain"
         />
       </div>
-      <p className="text-gray-400 text-sm italic text-center">{meme.caption}</p>
+
+      <p className="text-gray-400 text-sm italic text-center">
+        {meme.caption}
+      </p>
     </div>
   );
 }
 
 function VideoEmbed({ video }) {
   return (
-    <div className="border border-gray-800 rounded-xl p-6 flex flex-col gap-3">
+    <div className="border border-gray-800 rounded-xl p-6 flex flex-col items-center gap-3">
+
       <p className="text-sm font-semibold text-koodAccent uppercase tracking-widest">
         Keep it in mind
       </p>
+
       <h3 className="text-lg font-semibold">{video.title}</h3>
-      <p className="text-gray-400 text-sm">{video.description}</p>
-      <div className="relative w-full rounded-lg overflow-hidden" style={{ paddingTop: "56.25%" }}>
+
+      <p className="text-gray-400 text-sm text-center max-w-md">
+        {video.description}
+      </p>
+
+      <div
+        className="relative w-full rounded-lg overflow-hidden"
+        style={{ paddingTop: "56.25%" }}
+      >
         <iframe
           className="absolute inset-0 w-full h-full"
           src={`https://www.youtube.com/embed/${video.youtubeId}`}
@@ -36,6 +49,7 @@ function VideoEmbed({ video }) {
           allowFullScreen
         />
       </div>
+
     </div>
   );
 }

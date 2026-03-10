@@ -7,9 +7,10 @@ export default function GuidedOverlay({ steps = [], storageKey, onDone }) {
 
   const key = useMemo(() => storageKey || "overlay-default", [storageKey]);
 
- useEffect(() => {
-  setOpen(true);
-}, [key]);
+  useEffect(() => {
+    const seen = localStorage.getItem(key);
+    if (seen === "1") setOpen(false);
+  }, [key]);
 
   if (!open || !steps.length) return null;
 
