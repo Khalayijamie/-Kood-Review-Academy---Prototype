@@ -44,7 +44,6 @@ function VideoEmbed({ video }) {
 export default function Intro() {
   const nav = useNavigate();
   const intro = academy.modules.find((m) => m.id === "intro");
-  const { meme, video } = reviewAcademyContent.introFunContent;
 
   return (
     <div className="max-w-5xl">
@@ -59,12 +58,6 @@ export default function Intro() {
         />
         <CardBody>
           <div className="space-y-6">
-            {/* Hook them with a meme first */}
-            <MemeCard meme={meme} />
-
-            {/* Then the video to set the tone */}
-            <VideoEmbed video={video} />
-
             {/* Core lesson content */}
             {intro.content.map((c) => (
               <div key={c.heading} className="border border-gray-800 rounded-xl p-6">

@@ -3,24 +3,34 @@ export const reviewAcademyContent = {
     "cat-perfsec": [
       {
         id: "ps-1",
-        title: "Leaky API key + repeated heavy loop",
+        missionTitle: "Mission 1: Security Guardian",
+        hook: {
+          type: "dialogue",
+          title: "Something feels off...",
+          text: `Developer: "I just finished the weather stats feature."
+Reviewer: "Nice. Mind if I take a closer look?"
+Developer: "Sure — it works perfectly."`,
+        },
+        microLesson: [
+          "Never expose API keys in source code.",
+          "Avoid repeated expensive operations when one result can be reused.",
+          "A good reviewer gives specific, evidence-based feedback.",
+        ],
         context:
-          "You’re reviewing a small service that fetches weather data and computes daily stats.",
-        goal:
-          "Assess performance & security: secrets handling, efficiency, and safe defaults.",
+          "You are reviewing a weather statistics service. Check for performance and security issues.",
         code: {
           language: "js",
-          snippet: `// weatherService.js
-const API_KEY = "sk_live_1234567890"; // TODO: move later
+          snippet: `const API_KEY = "sk_live_123456789";
 
 export async function getStats(days) {
   let result = [];
+
   for (let i = 0; i < days.length; i++) {
-    // expensive: fetch same endpoint repeatedly even if day repeats
-    const r = await fetch("https://api.weather.com/data?key=" + API_KEY);
-    const data = await r.json();
+    const response = await fetch("https://api.weather.com/data?key=" + API_KEY);
+    const data = await response.json();
     result.push({ day: days[i], avg: average(data.temps) });
   }
+
   return result;
 }
 
@@ -28,68 +38,73 @@ function average(arr) {
   return arr.reduce((a, b) => a + b, 0) / arr.length;
 }`,
         },
-        feedbackOptions: [
-          {
-            id: "poor",
-            label: "Poor review",
-            text:
-              "Looks fine. Code works and seems clean. Approved.",
-            whyBad: [
-              "No evidence of testing or checks.",
-              "Ignores hard-coded secret in code.",
-              "Misses performance issue: repeated identical fetch.",
-              "No suggestions for safer patterns.",
-            ],
-          },
-          {
-            id: "good",
-            label: "Good review",
-            text:
-              "Two critical issues: (1) API key is hard-coded — move it to env/config and ensure it’s not committed. (2) getStats fetches the same endpoint for every day; consider caching the response once per run or batching requests. Also handle fetch failures (non-200) to fail safely.",
-            whyGood: [
-              "Identifies security risk (secret leakage) with a concrete fix.",
-              "Identifies inefficiency with a concrete optimization path.",
-              "Adds safe-failure recommendation.",
-              "Grounded in evidence from code.",
-            ],
-          },
-        ],
-        quiz: {
-          id: "ps-1-quiz",
-          prompt:
-            "Select ALL statements that are valid and evidence-based review feedback for this code.",
+        challenge: {
+          type: "multi-select",
+          prompt: "What should a good reviewer point out? Select all that apply.",
           options: [
             {
               id: "a",
-              text:
-                "Hard-coding an API key in the repository is unsafe; use environment variables or configuration instead.",
+              text: "The API key is hard-coded and should be moved to environment variables.",
               correct: true,
-              explain:
-                "Correct: secrets should not be committed; env/config is safer.",
             },
             {
               id: "b",
-              text:
-                "The loop is inefficient because it fetches the same endpoint repeatedly; cache or reuse the fetched data where possible.",
-              correct: true,
-              explain:
-                "Correct: repeated identical fetches are avoidable overhead.",
+              text: "The function should fetch the same endpoint repeatedly for better accuracy.",
+              correct: false,
             },
             {
               id: "c",
-              text:
-                "This is insecure because JavaScript is insecure by nature; rewrite in Rust.",
-              correct: false,
-              explain:
-                "Not evidence-based and not actionable for this code review.",
+              text: "The repeated fetch inside the loop may hurt performance and should be optimized.",
+              correct: true,
             },
             {
               id: "d",
-              text:
-                "Add handling for failed network calls (non-200, timeout) to avoid crashing or returning misleading results.",
+              text: "The code is perfect and can be approved immediately.",
+              correct: false,
+            },
+          ],
+        },
+        feedback: {
+          correctTitle: "You caught the real issues.",
+          correctBody:
+            "A strong reviewer should flag both the hard-coded secret and the repeated network call inside the loop. These are concrete, evidence-based concerns.",
+          wrongTitle: "Not quite.",
+          wrongBody:
+            "Look for real risks in the code. Focus on security, efficiency, and whether the feedback is grounded in visible evidence.",
+        },
+        reward: {
+          badge: "Security Guardian",
+          xp: 20,
+          message:
+            "Great reviewer! You spotted a real-world security and performance problem.",
+        },
+        quiz: {
+          id: "ps-1-quiz",
+          prompt: "Select ALL comments that reflect a strong code review for this snippet.",
+          options: [
+            {
+              id: "a",
+              text: "The API key should be removed from source code and stored securely.",
               correct: true,
-              explain:
-                "Correct: safe defaults and error handling are relevant here.",
+              explain: "Correct. Secrets should not be hard-coded.",
+            },
+            {
+              id: "b",
+              text: "Fetching the same endpoint inside the loop may be inefficient.",
+              correct: true,
+              explain: "Correct. Repeated network calls can be wasteful.",
+            },
+            {
+              id: "c",
+              text: "The code is good enough. Approve immediately.",
+              correct: false,
+              explain: "Not a strong review. It ignores visible issues.",
+            },
+            {
+              id: "d",
+              text: "A reviewer should mention possible error handling improvements too.",
+              correct: true,
+              explain: "Correct. Safe failure handling matters.",
             },
           ],
         },
@@ -145,31 +160,35 @@ export function doThing2(a, b) {
         quiz: {
           id: "read-1-quiz",
           prompt:
-            "Select ALL review comments that improve maintainability without changing behavior.",
+            "You're reviewing helpers.js for readability. Select ALL review comments that are specific, actionable, and evidence-based.",
           options: [
             {
               id: "a",
-              text: "Rename functions to reflect intent instead of doThing/doThing2.",
+              text: "fn1 and fn2 have names that reveal nothing about their purpose — rename them to describe what they compute (e.g., average, weightedAverage).",
               correct: true,
-              explain: "Clear naming improves readability and maintenance.",
+              explain:
+                "Correct: function names should describe behavior so callers don't need to read the implementation.",
             },
             {
               id: "b",
-              text: "Extract the averaging logic to a helper to avoid duplication.",
+              text: "fn1 and fn2 contain the same averaging loop — extract it into a shared helper (e.g., average(arr)) to eliminate duplication.",
               correct: true,
-              explain: "DRY refactor improves maintainability.",
+              explain:
+                "Correct: duplicated logic is harder to change correctly — a shared helper removes the risk of one copy diverging.",
             },
             {
               id: "c",
-              text: "This code is ugly; decline it.",
-              correct: false,
-              explain: "Not specific or actionable.",
+              text: "The variable r is unclear — a name like sum or total would make the intent obvious at a glance.",
+              correct: true,
+              explain:
+                "Correct: single-letter accumulator names require the reader to trace the loop to understand the value.",
             },
             {
               id: "d",
-              text: "Rewrite everything using a new framework.",
+              text: "These functions are too short and should be merged into one larger function for efficiency.",
               correct: false,
-              explain: "Unnecessary and not evidence-based for this scope.",
+              explain:
+                "Merging them would reduce clarity, not improve it. Short, focused functions are a readability strength.",
             },
           ],
         },
@@ -177,7 +196,6 @@ export function doThing2(a, b) {
     ],
   },
 
-  // Quick “guided overlay” steps (like the //kood tutorial cards)
   guidedOverlays: {
     intro: [
       {
@@ -213,42 +231,5 @@ export function doThing2(a, b) {
           "You can revisit any category before a real review. Low ratings can trigger mandatory retraining.",
       },
     ],
-  },
-
-  // Intro page: one meme + one video
-  introFunContent: {
-    meme: {
-      src: "/memes/review1.jpg",
-      alt: "Code review meme",
-      caption: "Sound familiar? You're about to be on the other side of this.",
-    },
-    video: {
-      youtubeId: "Y9sp8gONv9M",
-      title: "How to Do Code Reviews Like a Human",
-      description: "Before diving in — watch this. It sets the tone for everything you'll learn here.",
-    },
-  },
-
-  // Categories page: a couple of memes + a video to keep energy up
-  categoriesFunContent: {
-    memes: [
-      {
-        id: "m1",
-        src: "/memes/review2.png",
-        alt: "Code review meme 2",
-        caption: "Structured categories save everyone from this fate.",
-      },
-      {
-        id: "m2",
-        src: "/memes/review3.jpg",
-        alt: "Code review meme 3",
-        caption: "Each category below = one less surprise in your review.",
-      },
-    ],
-    video: {
-      youtubeId: "Y9sp8gONv9M",
-      title: "Revisit: Code Review Done Right",
-      description: "Keep this in mind as you explore the categories below.",
-    },
   },
 };
