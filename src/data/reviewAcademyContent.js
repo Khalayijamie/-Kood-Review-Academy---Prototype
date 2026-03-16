@@ -232,4 +232,23 @@ export function doThing2(a, b) {
       },
     ],
   },
+  categoriesFunContent: {
+    memes: [
+      {
+        src: "/memes/review1.jpg",
+        alt: "Review meme 1",
+        caption: "When your code review finds more bugs than the tests...",
+      },
+      {
+        src: "/memes/review2.png",
+        alt: "Review meme 2",
+        caption: "Reviewer: 'This looks good.' Developer: 'Wait, really?'",
+      },
+    ],
+    video: {
+      title: "The Art of Code Review",
+      description: "Learn why structured reviews make better code and happier teams.",
+      youtubeId: "dQw4w9WgXcQ", // Placeholder, replace with actual ID
+    },
+  },
 };
