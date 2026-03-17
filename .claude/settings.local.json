@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e \"const fs = require\\(''fs''\\); const content = fs.readFileSync\\(''src/pages/GroundRules.jsx'', ''utf8''\\); const hasSmartQuotes = /[\\\\u201c\\\\u201d\\\\u2018\\\\u2019]/.test\\(content\\); console.log\\(''Smart quotes remaining:'', hasSmartQuotes\\);\")"
+    ]
+  }
+}

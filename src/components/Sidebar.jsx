@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { academy } from "../data/reviewAcademy";
 
 function NavItem({ to, label, sub, isExpandable, isExpanded, onToggle, isCompleted }) {
@@ -28,7 +28,7 @@ function NavItem({ to, label, sub, isExpandable, isExpanded, onToggle, isComplet
       to={to}
       className={({ isActive }) =>
         [
-          "block px-3 py-2 rounded-lg text-sm transition flex items-center justify-between gap-3",
+          "flex px-3 py-2 rounded-lg text-sm transition items-center justify-between gap-3",
           isActive ? "bg-[#1a232e] text-white" : "text-gray-400 hover:text-white",
         ].join(" ")
       }
@@ -46,6 +46,7 @@ export default function Sidebar() {
   const [isCategoriesExpanded, setIsCategoriesExpanded] = useState(true);
   const [completedModules, setCompletedModules] = useState(new Set());
   const location = useLocation();
+  const nav = useNavigate();
 
   const steps = academy.modules.filter(
     (m) => m.id === "intro" || m.id === "categories" || m.type === "category" || m.id === "ground-rules"
@@ -157,7 +158,10 @@ export default function Sidebar() {
                 sub={s.estimatedMins ? `${s.estimatedMins}m` : ""}
                 isExpandable={true}
                 isExpanded={isCategoriesExpanded}
-                onToggle={() => setIsCategoriesExpanded(!isCategoriesExpanded)}
+                onToggle={() => {
+                  nav("/academy/categories");
+                  setIsCategoriesExpanded(true);
+                }}
                 isCompleted={isModuleCompleted}
               />
             );
