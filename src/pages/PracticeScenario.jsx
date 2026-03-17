@@ -139,40 +139,105 @@ export default function PracticeScenario() {
               </div>
               <h3 className="text-2xl font-bold mb-4">{scenario.challenge.prompt}</h3>
 
-              <div className="space-y-3">
+              {submitted && (
+                <div className="mb-5 flex items-center gap-3">
+                  {isAnswerCorrect ? (
+                    <div className="flex items-center gap-2 text-green-400 font-semibold text-lg">
+                      <span>🎯</span><span>All correct — you nailed it!</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 text-yellow-400 font-semibold text-lg">
+                      <span>💡</span><span>Good try — review the breakdown below.</span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <div className="space-y-4">
                 {scenario.challenge.options.map((option) => {
-                  const checked = selected.includes(option.id);
+                  const picked = selected.includes(option.id);
+                  const correct = option.correct;
+
+                  let borderClass = "border-gray-800";
+                  let bgClass = "";
+                  let badge = null;
+
+                  if (submitted) {
+                    if (picked && correct) {
+                      borderClass = "border-green-500";
+                      bgClass = "bg-green-900/10";
+                      badge = <span className="shrink-0 text-xs font-bold text-green-400 bg-green-900/30 px-2 py-0.5 rounded-full">✓ Correct</span>;
+                    } else if (picked && !correct) {
+                      borderClass = "border-red-500";
+                      bgClass = "bg-red-900/10";
+                      badge = <span className="shrink-0 text-xs font-bold text-red-400 bg-red-900/30 px-2 py-0.5 rounded-full">✗ Not this one</span>;
+                    } else if (!picked && correct) {
+                      borderClass = "border-yellow-500";
+                      bgClass = "bg-yellow-900/10";
+                      badge = <span className="shrink-0 text-xs font-bold text-yellow-400 bg-yellow-900/30 px-2 py-0.5 rounded-full">⚠ Missed this</span>;
+                    } else {
+                      badge = <span className="shrink-0 text-xs text-gray-600">✓ Correctly skipped</span>;
+                    }
+                  }
 
                   return (
-                    <button
+                    <div
                       key={option.id}
-                      onClick={() => toggleOption(option.id)}
-                      className={`w-full text-left border rounded-xl p-4 transition ${
-                        checked
-                          ? "border-koodAccent bg-[#202b38]"
-                          : "border-gray-800 hover:bg-[#1a232e]"
-                      }`}
+                      className={`border rounded-xl transition ${borderClass} ${bgClass}`}
                     >
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`h-5 w-5 rounded border flex items-center justify-center text-xs ${
-                            checked
-                              ? "border-koodAccent bg-koodAccent text-black"
-                              : "border-gray-600"
-                          }`}
-                        >
-                          {checked ? "✓" : ""}
+                      <div
+                        className={`p-4 ${!submitted ? "cursor-pointer select-none" : ""}`}
+                        onClick={!submitted ? () => toggleOption(option.id) : undefined}
+                      >
+                        <div className="flex items-start gap-3">
+                          {!submitted && (
+                            <div className={`h-5 w-5 rounded border flex items-center justify-center text-xs shrink-0 mt-0.5 ${
+                              picked ? "border-koodAccent bg-koodAccent text-black" : "border-gray-600"
+                            }`}>
+                              {picked ? "✓" : ""}
+                            </div>
+                          )}
+                          <div className="flex-1">
+                            <div className="flex flex-wrap items-start justify-between gap-2">
+                              <span className={submitted ? "font-medium" : ""}>{option.text}</span>
+                              {submitted && badge}
+                            </div>
+                            {submitted && option.explain && (
+                              <p className="text-sm text-gray-400 mt-2 leading-relaxed">{option.explain}</p>
+                            )}
+                          </div>
                         </div>
-                        <span>{option.text}</span>
                       </div>
-                    </button>
+
+                      {submitted && correct && option.goodReview && (
+                        <div className="px-4 pb-4">
+                          <div className="grid sm:grid-cols-2 gap-2">
+                            <div className="bg-green-900/15 border border-green-700/40 rounded-xl p-3">
+                              <div className="text-xs font-semibold text-green-400 mb-2">✅ Strong review comment</div>
+                              <p className="text-xs text-gray-300 leading-relaxed italic">"{option.goodReview}"</p>
+                            </div>
+                            <div className="bg-red-900/15 border border-red-700/40 rounded-xl p-3">
+                              <div className="text-xs font-semibold text-red-400 mb-2">❌ Weak review comment</div>
+                              <p className="text-xs text-gray-300 leading-relaxed italic">"{option.badReview}"</p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   );
                 })}
               </div>
 
-              <div className="mt-6">
-                <Button onClick={() => setSubmitted(true)}>Submit Answer</Button>
-              </div>
+              {!submitted && (
+                <div className="mt-6">
+                  <Button
+                    onClick={() => setSubmitted(true)}
+                    className={selected.length === 0 ? "opacity-50 pointer-events-none" : ""}
+                  >
+                    Submit Answer
+                  </Button>
+                </div>
+              )}
             </div>
           )}
 
@@ -220,11 +285,11 @@ export default function PracticeScenario() {
 
             {stage === 5 && (
               <>
-                <Button onClick={() => nav(`/academy/${id}/quiz/ps-1-quiz`)}>
-                  Continue to Quiz
+                <Button onClick={() => nav(`/academy/${id}`)}>
+                  Back to lesson
                 </Button>
-                <Button variant="secondary" onClick={() => nav(`/academy/${id}`)}>
-                  Back to Lesson
+                <Button variant="secondary" onClick={() => nav("/academy/categories")}>
+                  All categories
                 </Button>
               </>
             )}

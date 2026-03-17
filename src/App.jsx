@@ -5,7 +5,6 @@ import Intro from "./pages/Intro";
 import CategoriesFramework from "./pages/CategoriesFramework";
 import CategoryLesson from "./pages/CategoryLesson";
 import PracticeScenario from "./pages/PracticeScenario";
-import Quiz from "./pages/Quiz";
 import GroundRules from "./pages/GroundRules";
 import Complete from "./pages/Complete";
 
@@ -25,8 +24,6 @@ export default function App() {
 
             {/* Practice + quiz are more specific than category lesson */}
             <Route path="/academy/:id/practice" element={<PracticeScenario />} />
-            <Route path="/academy/:id/quiz/:quizId" element={<Quiz />} />
-
             {/* Category lesson (last) */}
             <Route path="/academy/:id" element={<CategoryLesson />} />
 
