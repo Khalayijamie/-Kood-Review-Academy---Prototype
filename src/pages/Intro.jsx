@@ -1,45 +1,8 @@
 import { academy } from "../data/reviewAcademy";
-import { Button, Card, CardBody, CardHeader } from "../components/ui";
+import { Button, Card, CardBody, CardHeader, Pill } from "../components/ui";
 import { useNavigate } from "react-router-dom";
 import GuidedOverlay from "../components/GuidedOverlay";
 import { reviewAcademyContent } from "../data/reviewAcademyContent";
-
-function MemeCard({ meme }) {
-  return (
-    <div className="border border-gray-800 rounded-xl p-6 flex flex-col items-center gap-3">
-      <img
-        src={meme.src}
-        alt={meme.alt}
-        className="max-w-sm w-full rounded-lg"
-      />
-
-      <p className="text-gray-400 text-sm italic text-center">
-        {meme.caption}
-      </p>
-    </div>
-  );
-}
-
-function VideoEmbed({ video }) {
-  return (
-    <div className="border border-gray-800 rounded-xl p-6 flex flex-col gap-3">
-      <p className="text-sm font-semibold text-koodAccent uppercase tracking-widest">
-        Watch First
-      </p>
-      <h3 className="text-lg font-semibold">{video.title}</h3>
-      <p className="text-gray-400 text-sm">{video.description}</p>
-      <div className="relative w-full rounded-lg overflow-hidden" style={{ paddingTop: "56.25%" }}>
-        <iframe
-          className="absolute inset-0 w-full h-full"
-          src={`https://www.youtube.com/embed/${video.youtubeId}`}
-          title={video.title}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        />
-      </div>
-    </div>
-  );
-}
 
 export default function Intro() {
   const nav = useNavigate();
@@ -65,12 +28,69 @@ export default function Intro() {
                 <p className="text-gray-300 mt-2 leading-relaxed">{c.body}</p>
               </div>
             ))}
+
+            <div className="border border-gray-800 rounded-xl p-6 bg-[#101823]">
+              <div className="flex flex-wrap items-center gap-2">
+                <Pill tone="core">Quick pre-brief</Pill>
+                <Pill>Prepare like a pro</Pill>
+                <Pill>Review with evidence</Pill>
+              </div>
+
+              <div className="mt-4 grid md:grid-cols-3 gap-4">
+                <div className="border border-gray-800 rounded-xl p-4">
+                  <div className="text-sm font-semibold text-koodAccent uppercase tracking-widest">
+                    Your roles
+                  </div>
+                  <p className="text-gray-300 mt-2 text-sm leading-relaxed">
+                    You’ll switch hats: sometimes you submit, sometimes you review. Both require clarity and calm.
+                  </p>
+                </div>
+
+                <div className="border border-gray-800 rounded-xl p-4">
+                  <div className="text-sm font-semibold text-koodAccent uppercase tracking-widest">
+                    Your default
+                  </div>
+                  <p className="text-gray-300 mt-2 text-sm leading-relaxed">
+                    Don’t guess. Test. Ask. Point to evidence. If you can’t justify it, frame it as a question.
+                  </p>
+                </div>
+
+                <div className="border border-gray-800 rounded-xl p-4">
+                  <div className="text-sm font-semibold text-koodAccent uppercase tracking-widest">
+                    Your outcome
+                  </div>
+                  <p className="text-gray-300 mt-2 text-sm leading-relaxed">
+                    The goal isn’t “pass/fail”. It’s “understood and improved” — with fairness and respect.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-5 grid md:grid-cols-2 gap-4">
+                <div className="border border-gray-800 rounded-xl p-4">
+                  <div className="text-sm font-semibold">Do</div>
+                  <ul className="mt-2 text-sm text-gray-300 space-y-2">
+                    <li className="flex gap-2"><span className="text-koodAccent">•</span><span>Reproduce the issue (or verify the behavior) before commenting.</span></li>
+                    <li className="flex gap-2"><span className="text-koodAccent">•</span><span>Give one clear reason + one actionable suggestion.</span></li>
+                    <li className="flex gap-2"><span className="text-koodAccent">•</span><span>Keep the review structured (categories, steps, outcomes).</span></li>
+                  </ul>
+                </div>
+
+                <div className="border border-gray-800 rounded-xl p-4">
+                  <div className="text-sm font-semibold">Don’t</div>
+                  <ul className="mt-2 text-sm text-gray-300 space-y-2">
+                    <li className="flex gap-2"><span className="text-koodAccent">•</span><span>Approve by default to “be nice”.</span></li>
+                    <li className="flex gap-2"><span className="text-koodAccent">•</span><span>Argue opinions as facts (“I don’t like this”).</span></li>
+                    <li className="flex gap-2"><span className="text-koodAccent">•</span><span>Forget the human — critique code, not people.</span></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="mt-8 flex items-center gap-3">
-            <Button onClick={() => nav("/academy/categories")}>Continue</Button>
-            <Button variant="secondary" onClick={() => nav("/academy/ground-rules")}>
-              Skip to ground rules
+            <Button onClick={() => nav("/academy/ground-rules")}>Ground rules (quick read)</Button>
+            <Button variant="secondary" onClick={() => nav("/academy/categories")}>
+              Jump into categories
             </Button>
           </div>
         </CardBody>
