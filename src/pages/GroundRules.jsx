@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { academy } from "../data/reviewAcademy";
 import { Button, Card, CardBody, CardHeader, Pill } from "../components/ui";
 import { useNavigate } from "react-router-dom";
@@ -136,8 +136,29 @@ export default function GroundRules() {
   const nav = useNavigate();
   const lesson = academy.modules.find((m) => m.id === "ground-rules");
   const [activeRole, setActiveRole] = useState("Reviewer");
+  const [completedModules, setCompletedModules] = useState(new Set());
+
+  // Load completion state from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem("completedModules");
+    if (saved) {
+      try {
+        setCompletedModules(new Set(JSON.parse(saved)));
+      } catch {
+        // Ignore parse errors
+      }
+    }
+  }, []);
 
   const rhythmDays = reviewRhythmByRole[activeRole] || [];
+
+  // Calculate progress to determine if button should be enabled
+  const steps = academy.modules.filter(
+    (m) => m.id === "intro" || m.id === "categories" || m.type === "category" || m.id === "ground-rules"
+  );
+  const totalModules = steps.length;
+  const completedCount = completedModules.size;
+  const isSprintComplete = completedCount === totalModules;
 
   return (
     <div className="max-w-5xl">
@@ -383,7 +404,9 @@ export default function GroundRules() {
           </div>
 
           <div className="mt-8 flex items-center gap-3">
-            <Button onClick={() => nav("/academy/complete")}>Complete sprint</Button>
+            <Button onClick={() => nav("/academy/complete")} disabled={!isSprintComplete}>
+              Complete sprint
+            </Button>
             <Button variant="secondary" onClick={() => nav("/academy/categories")}>
               Review categories again
             </Button>

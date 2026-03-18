@@ -25,15 +25,16 @@ export function CardBody({ children }) {
   return <div className="p-8 pt-6">{children}</div>;
 }
 
-export function Button({ children, onClick, variant = "primary", className = "" }) {
+export function Button({ children, onClick, variant = "primary", className = "", disabled = false }) {
   const base =
     "px-5 py-3 rounded-lg font-semibold transition active:scale-[0.99]";
   const styles =
     variant === "primary"
       ? "bg-koodAccent text-black hover:brightness-95"
       : "bg-[#2a3645] text-white border border-gray-700 hover:bg-[#324155]";
+  const disabledStyles = disabled ? "opacity-50 cursor-not-allowed pointer-events-none" : "";
   return (
-    <button className={`${base} ${styles} ${className}`} onClick={onClick}>
+    <button className={`${base} ${styles} ${disabledStyles} ${className}`} onClick={onClick} disabled={disabled}>
       {children}
     </button>
   );
