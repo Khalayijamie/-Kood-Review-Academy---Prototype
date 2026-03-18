@@ -80,8 +80,8 @@ export default function Intro() {
               </div>
               {/* Replace VIDEO_ID_1 with the actual YouTube video ID */}
               <YoutubeEmbed
-                videoId="VIDEO_ID_1"
-                caption="What is a code review? — Replace VIDEO_ID_1 with the actual YouTube video ID"
+                videoId="Y9sp8gONv9M"
+                caption="What is a code review? A beginner's guide"
               />
             </div>
 
