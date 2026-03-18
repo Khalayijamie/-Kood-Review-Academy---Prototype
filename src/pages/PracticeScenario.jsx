@@ -19,6 +19,42 @@ function CodeBlock({ language, snippet }) {
   );
 }
 
+function MemeBreak({ emoji, caption, insight }) {
+  return (
+    <div className="border border-dashed border-gray-700 rounded-xl p-6 bg-[#0d1820] text-center">
+      <div className="text-6xl mb-3">{emoji}</div>
+      <div className="text-lg font-bold text-white mb-1">{caption}</div>
+      <div className="text-sm text-gray-400 max-w-sm mx-auto leading-relaxed">{insight}</div>
+    </div>
+  );
+}
+
+function CollapsibleCode({ language, snippet }) {
+  const [expanded, setExpanded] = useState(false);
+  const lines = snippet.split("\n");
+  const preview = lines.slice(0, 8).join("\n");
+  const hasMore = lines.length > 8;
+
+  return (
+    <div className="border border-gray-800 rounded-xl overflow-hidden">
+      <div className="flex items-center justify-between px-4 py-2 bg-[#111922] border-b border-gray-800">
+        <div className="text-gray-400 text-xs uppercase tracking-wider">Code • {language} (read-only)</div>
+        {hasMore && (
+          <button
+            onClick={() => setExpanded((v) => !v)}
+            className="text-xs text-koodAccent hover:underline"
+          >
+            {expanded ? "show less" : "show full code"}
+          </button>
+        )}
+      </div>
+      <pre className="p-4 text-sm text-gray-200 overflow-auto leading-relaxed">
+        <code>{expanded || !hasMore ? snippet : preview + "\n..."}</code>
+      </pre>
+    </div>
+  );
+}
+
 export default function PracticeScenario() {
   const { id } = useParams();
   const nav = useNavigate();
@@ -30,6 +66,11 @@ export default function PracticeScenario() {
   const [stage, setStage] = useState(0);
   const [selected, setSelected] = useState([]);
   const [submitted, setSubmitted] = useState(false);
+
+  // Agenda Builder state
+  const [agendaText, setAgendaText] = useState("");
+  const [agendaSubmitted, setAgendaSubmitted] = useState(false);
+  const [examplesOpen, setExamplesOpen] = useState(false);
 
   if (!category || !scenario) {
     return (
@@ -51,7 +92,6 @@ export default function PracticeScenario() {
 
   const toggleOption = (optionId) => {
     if (submitted) return;
-
     setSelected((prev) =>
       prev.includes(optionId)
         ? prev.filter((id) => id !== optionId)
@@ -70,6 +110,9 @@ export default function PracticeScenario() {
   const nextStage = () => setStage((prev) => prev + 1);
   const prevStage = () => setStage((prev) => Math.max(0, prev - 1));
 
+  // 7 stages: 0=hook 1=microLesson 2=code 3=challenge 4=feedback 5=agendaBuilder 6=reward
+  const TOTAL_STAGES = 7;
+
   return (
     <div className="max-w-6xl">
       <Card>
@@ -79,8 +122,9 @@ export default function PracticeScenario() {
           right={<Pill tone="advanced">{category.tag}</Pill>}
         />
         <CardBody>
+          {/* Progress bar — 7 segments */}
           <div className="mb-6 flex items-center gap-2">
-            {[0, 1, 2, 3, 4, 5].map((s) => (
+            {Array.from({ length: TOTAL_STAGES }).map((_, s) => (
               <div
                 key={s}
                 className={`h-2 flex-1 rounded-full ${
@@ -90,6 +134,7 @@ export default function PracticeScenario() {
             ))}
           </div>
 
+          {/* Stage 0 — Hook */}
           {stage === 0 && (
             <div className="border border-gray-800 rounded-xl p-6">
               <div className="text-koodAccent text-sm font-semibold uppercase tracking-widest mb-3">
@@ -102,6 +147,7 @@ export default function PracticeScenario() {
             </div>
           )}
 
+          {/* Stage 1 — Micro Lesson */}
           {stage === 1 && (
             <div className="border border-gray-800 rounded-xl p-6">
               <div className="text-koodAccent text-sm font-semibold uppercase tracking-widest mb-3">
@@ -116,6 +162,7 @@ export default function PracticeScenario() {
             </div>
           )}
 
+          {/* Stage 2 — Code Example */}
           {stage === 2 && (
             <div className="space-y-4">
               <div className="border border-gray-800 rounded-xl p-6">
@@ -132,6 +179,7 @@ export default function PracticeScenario() {
             </div>
           )}
 
+          {/* Stage 3 — Challenge */}
           {stage === 3 && (
             <div className="border border-gray-800 rounded-xl p-6">
               <div className="text-koodAccent text-sm font-semibold uppercase tracking-widest mb-3">
@@ -241,6 +289,7 @@ export default function PracticeScenario() {
             </div>
           )}
 
+          {/* Stage 4 — Feedback */}
           {stage === 4 && (
             <div className="border border-gray-800 rounded-xl p-6">
               <div className="text-koodAccent text-sm font-semibold uppercase tracking-widest mb-3">
@@ -259,7 +308,104 @@ export default function PracticeScenario() {
             </div>
           )}
 
+          {/* Stage 5 — Agenda Builder */}
           {stage === 5 && (
+            <div className="space-y-5">
+              <MemeBreak
+                emoji="📋"
+                caption="The AI agenda"
+                insight="Hallucinating test points since 2023. Write your own."
+              />
+
+              <div className="border border-gray-800 rounded-xl p-6">
+                <div className="text-koodAccent text-sm font-semibold uppercase tracking-widest mb-3">
+                  Agenda Builder
+                </div>
+                <h3 className="text-2xl font-bold mb-2">Write your own question</h3>
+                <p className="text-gray-400 text-sm mb-5">
+                  You have spotted the issues. Now write one question you would bring to the review call.
+                </p>
+
+                <CollapsibleCode
+                  language={scenario.code.language}
+                  snippet={scenario.code.snippet}
+                />
+
+                <div className="mt-5">
+                  {!agendaSubmitted ? (
+                    <>
+                      <textarea
+                        className="w-full bg-[#111922] border border-gray-700 rounded-xl p-4 text-sm text-gray-200 placeholder-gray-600 resize-none focus:outline-none focus:border-koodAccent transition"
+                        rows={4}
+                        placeholder="e.g. Why is the API key stored directly in the component rather than in an environment variable?"
+                        value={agendaText}
+                        onChange={(e) => setAgendaText(e.target.value)}
+                      />
+                      <div className="mt-3 flex items-center gap-4">
+                        <Button
+                          onClick={() => setAgendaSubmitted(true)}
+                          className={agendaText.trim().length < 20 ? "opacity-50 pointer-events-none" : ""}
+                        >
+                          Submit my question
+                        </Button>
+                        <span className="text-xs text-gray-600">
+                          {agendaText.trim().length < 20
+                            ? `${20 - agendaText.trim().length} more characters needed`
+                            : ""}
+                        </span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="space-y-4">
+                      {/* Student's submitted question */}
+                      <div className="border-l-4 border-koodAccent bg-[#111922] rounded-r-xl p-4">
+                        <div className="text-xs font-semibold text-koodAccent mb-1 uppercase tracking-wider">Your question</div>
+                        <p className="text-sm text-gray-200 leading-relaxed italic">"{agendaText}"</p>
+                      </div>
+
+                      <p className="text-sm text-gray-400">
+                        Good agenda questions come from the code, not from a template.
+                      </p>
+
+                      {/* Collapsible examples */}
+                      {scenario.agendaExamples && (
+                        <div className="border border-gray-800 rounded-xl overflow-hidden">
+                          <button
+                            onClick={() => setExamplesOpen((v) => !v)}
+                            className="w-full flex items-center justify-between px-4 py-3 bg-[#111922] hover:bg-[#1a2535] transition text-left text-sm text-gray-400"
+                          >
+                            <span>See example questions</span>
+                            <span
+                              className="text-xs transition-transform duration-150"
+                              style={{ transform: examplesOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+                            >
+                              ▼
+                            </span>
+                          </button>
+                          {examplesOpen && (
+                            <div className="px-4 pb-4 pt-3 bg-[#0d1820] space-y-2">
+                              <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+                                Strong agenda questions for this code
+                              </div>
+                              {scenario.agendaExamples.map((q, i) => (
+                                <div key={i} className="flex gap-3 items-start">
+                                  <span className="text-koodAccent text-xs mt-1 shrink-0">▸</span>
+                                  <p className="text-sm text-gray-300 leading-relaxed">{q}</p>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Stage 6 — Reward */}
+          {stage === 6 && (
             <div className="border border-gray-800 rounded-xl p-6 text-center">
               <div className="text-5xl mb-4">🏅</div>
               <h3 className="text-2xl font-bold mb-2">{scenario.reward.badge}</h3>
@@ -270,6 +416,7 @@ export default function PracticeScenario() {
             </div>
           )}
 
+          {/* Navigation */}
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Button variant="secondary" onClick={prevStage}>
               Back
@@ -281,9 +428,17 @@ export default function PracticeScenario() {
               <Button onClick={nextStage}>See Feedback</Button>
             )}
 
-            {stage === 4 && <Button onClick={nextStage}>Claim Reward</Button>}
+            {stage === 4 && <Button onClick={nextStage}>Agenda Builder</Button>}
 
-            {stage === 5 && (
+            {stage === 5 && agendaSubmitted && (
+              <Button onClick={nextStage}>Claim Reward</Button>
+            )}
+
+            {stage === 5 && !agendaSubmitted && (
+              <span className="text-xs text-gray-600">Submit your question to continue</span>
+            )}
+
+            {stage === 6 && (
               <>
                 <Button onClick={() => nav(`/academy/${id}`)}>
                   Back to lesson
